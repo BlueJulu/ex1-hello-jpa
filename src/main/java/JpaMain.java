@@ -14,6 +14,8 @@ public class JpaMain {
 
         try{
             List<Member> result = em.createQuery("select m from Member as m", Member.class)
+                    .setFirstResult(5)
+                    .setMaxResults(10)
                     .getResultList();
             // m 으로 한 이유: 대상이 객체가 됨. 테이블을 대상으로 절대 코드를 작성하지 않음
             // 객체를 대상으로 쿼리를 날림
