@@ -1,7 +1,7 @@
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import entity.Member;
+
+import javax.persistence.*;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -13,14 +13,16 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Member member = new Member();
-            member.setId(2L);
-            member.setName("helloB");
+            List<Member> result = em.createQuery("select m from Member as m", Member.class)
+                    .getResultList();
+            // m 으로 한 이유: 대상이 객체가 됨. 테이블을 대상으로 절대 코드를 작성하지 않음
+            // 객체를 대상으로 쿼리를 날림
+            // 위 쿼리문의 의미: Member 객체를 다 가져와~!
+            for(Member member : result){
+                System.out.println("member.name = " + member.getName());
+            }
 
-            em.persist(member);
-
-            tx.commit(); // 커밋까지하는 과정에서 오류 발생 시 처리하는 문장이 되어야 함
-                        // 정상이면 커밋해야 하니까
+            tx.commit();
         } catch(Exception e){
             tx.rollback();
         } finally {
