@@ -11,11 +11,11 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Member member1 = new Member(8L, "A");
-            Member member2 = new Member(9L, "B");
+            Member member = em.find(Member.class, 9L);
+            member.setName("ZZZZZ");
 
-            em.persist(member1);
-            em.persist(member2);
+            //em.persist(member); 이 문장이 필요 없음
+
             System.out.println("========================");
 
             tx.commit();
