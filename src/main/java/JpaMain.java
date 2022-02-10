@@ -1,29 +1,28 @@
 import entity.Member;
 
 import javax.persistence.*;
-import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
         EntityManager em = emf.createEntityManager();
-
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
         try{
-            List<Member> result = em.createQuery("select m from Member as m", Member.class)
-                    .setFirstResult(5)
-                    .setMaxResults(10)
-                    .getResultList();
-            // m 으로 한 이유: 대상이 객체가 됨. 테이블을 대상으로 절대 코드를 작성하지 않음
-            // 객체를 대상으로 쿼리를 날림
-            // 위 쿼리문의 의미: Member 객체를 다 가져와~!
-            for(Member member : result){
-                System.out.println("member.name = " + member.getName());
-            }
+            // 비영속 상태
+            Member member = new Member();
+            member.setId(6L);
+            member.setName("HelloJPA");
 
+            // 영속 상태 - 이 때 DB에 저장되는 것이 아님
+            System.out.println("=== BEFORE ===");
+            em.persist(member);
+            System.out.println("=== AFTER ===");
+
+            // 영속 상태가 됐다고 바로 DB로 쿼리가 가지 않음
+            // --> commit() 하는 싯점에 영속성 컨텍스트에 있는 내용이 DB로 쿼리가 날아감
             tx.commit();
         } catch(Exception e){
             tx.rollback();
