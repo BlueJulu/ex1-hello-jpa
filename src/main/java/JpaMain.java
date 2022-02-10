@@ -13,7 +13,7 @@ public class JpaMain {
         try{
             // 비영속 상태
             Member member = new Member();
-            member.setId(6L);
+            member.setId(7L);
             member.setName("HelloJPA");
 
             // 영속 상태 - 이 때 DB에 저장되는 것이 아님
@@ -21,8 +21,11 @@ public class JpaMain {
             em.persist(member);
             System.out.println("=== AFTER ===");
 
-            // 영속 상태가 됐다고 바로 DB로 쿼리가 가지 않음
-            // --> commit() 하는 싯점에 영속성 컨텍스트에 있는 내용이 DB로 쿼리가 날아감
+            Member findMember = em.find(Member.class, 7L);
+
+            System.out.println("findMember.id = " + findMember.getId());
+            System.out.println("findMember.name = " + findMember.getName());
+
             tx.commit();
         } catch(Exception e){
             tx.rollback();
