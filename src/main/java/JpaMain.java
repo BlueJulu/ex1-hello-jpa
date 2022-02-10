@@ -11,20 +11,8 @@ public class JpaMain {
         tx.begin();
 
         try{
-            // 비영속 상태
-            Member member = new Member();
-            member.setId(7L);
-            member.setName("HelloJPA");
-
-            // 영속 상태 - 이 때 DB에 저장되는 것이 아님
-            System.out.println("=== BEFORE ===");
-            em.persist(member);
-            System.out.println("=== AFTER ===");
-
-            Member findMember = em.find(Member.class, 7L);
-
-            System.out.println("findMember.id = " + findMember.getId());
-            System.out.println("findMember.name = " + findMember.getName());
+            Member findMember1 = em.find(Member.class, 7L);
+            Member findMember2 = em.find(Member.class, 7L);
 
             tx.commit();
         } catch(Exception e){
