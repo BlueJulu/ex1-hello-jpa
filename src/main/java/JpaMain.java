@@ -11,10 +11,11 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Member member = em.find(Member.class, 9L);
-            member.setName("ZZZZZ");
+            Member member = new Member(10L, "member10");
+            em.persist(member);
 
-            //em.persist(member); 이 문장이 필요 없음
+            // commit 전에 강제로 수행
+            em.flush();
 
             System.out.println("========================");
 
