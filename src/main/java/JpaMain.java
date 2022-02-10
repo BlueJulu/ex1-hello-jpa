@@ -11,13 +11,15 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Member member = new Member(10L, "member10");
-            em.persist(member);
+            // 영속
+            Member member = em.find(Member.class, 9L);
+            member.setName("AAAAA");
 
-            // commit 전에 강제로 수행
-            em.flush();
+            em.clear();
 
             System.out.println("========================");
+
+            Member member1 = em.find(Member.class, 9L);
 
             tx.commit();
         } catch(Exception e){
