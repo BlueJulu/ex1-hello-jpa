@@ -1,4 +1,5 @@
 import entity.Member;
+import hellojpa.RoleType;
 
 import javax.persistence.*;
 
@@ -11,16 +12,12 @@ public class JpaMain {
         tx.begin();
 
         try{
-            // 영속
-            Member member = em.find(Member.class, 9L);
-            member.setName("AAAAA");
+            Member member = new Member();
+            //member.setId(1L);
+            member.setUsername("B");
+            member.setRoleType(RoleType.ADMIN);
 
-            em.clear();
-
-            System.out.println("========================");
-
-            Member member1 = em.find(Member.class, 9L);
-
+            em.persist(member);
             tx.commit();
         } catch(Exception e){
             tx.rollback();
