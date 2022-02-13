@@ -1,7 +1,10 @@
 import entity.Member;
-import hellojpa.RoleType;
+import entity.Team;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -12,12 +15,18 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Member member = new Member();
-            //member.setId(1L);
-            member.setUsername("B");
-            member.setRoleType(RoleType.ADMIN);
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team); // 이제 1차 캐시에 id 값이 들어감. 영속 상태
 
+            Member member = new Member();
+            member.setUserName("member1");
+            member.setTeamId(team.getId());
             em.persist(member);
+
+            Member findMember = em.find(Member.class, member.getId()); // 비 객체지향적 방식
+            Team findTeam = em.find(Team.class, findMember.getTeamId()); // 비 객체지향적 방식
+
             tx.commit();
         } catch(Exception e){
             tx.rollback();
