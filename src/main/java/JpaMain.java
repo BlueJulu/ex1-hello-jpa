@@ -21,11 +21,21 @@ public class JpaMain {
 
             Member member = new Member();
             member.setUserName("member1");
-            member.setTeamId(team.getId());
+            member.setTeam(team);
             em.persist(member);
 
-            Member findMember = em.find(Member.class, member.getId()); // 비 객체지향적 방식
-            Team findTeam = em.find(Team.class, findMember.getTeamId()); // 비 객체지향적 방식
+            // 아래 코드 밑에 있는 find 문은 영속성 컨텍스트 때문에 1차 캐시에서 가져오게 된다.
+            // 아래 두 코드는 원래 안 쓰는데, 굳이 select 쿼리문을 보고 싶다면 이 두가지 코드를 앞에 삽입하면 된다
+            em.flush(); // 쿼리 수행 - 1차 캐시와 DB 동기화
+            em.clear(); // 1차 캐시 삭제
+
+            Member findMember = em.find(Member.class, member.getId()); // 1차 캐시가 삭제 되었기 때문에 쿼리문 수행
+                            // 만약 위 두줄 코드(flush, clear)를 삭제하면 쿼리문 수행 안함(1차 캐시에서 가져오기 때문)
+            Team findTeam = findMember.getTeam(); // 객체지향적 방식
+            
+            // 수정 - 손쉽게 변경이 가능0
+            Team newTeam = em.find(Team.class, 100L); // 만약 100번 데이터가 있다면
+            findMember.setTeam(newTeam); // 수정도 이렇게 간단히 할 수 있다. update 쿼리에 의해서 자동 FK가 업데이트 됨
 
             tx.commit();
         } catch(Exception e){

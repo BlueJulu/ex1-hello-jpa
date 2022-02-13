@@ -12,8 +12,11 @@ public class Member {
     @Column(name = "USERNAME")
     private String userName;
 
-    @Column(name = "TEAM_ID")
-    private Long teamId;
+//    @Column(name = "TEAM_ID")
+//    private Long teamId;
+    @ManyToOne(fetch = FetchType.LAZY) // Member가 여럿이고 Team은 하나. 지연로딩 전략을 사용하면 쿼리가 분리되어서 나감
+    @JoinColumn(name = "TEAM_ID") // teamId가 아닌 Team 참조와 FK를 매핑
+    private Team team;
 
     public Long getId() {
         return id;
@@ -31,11 +34,11 @@ public class Member {
         this.userName = userName;
     }
 
-    public Long getTeamId() {
-        return teamId;
+    public Team getTeam() {
+        return team;
     }
 
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }
