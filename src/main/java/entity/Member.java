@@ -41,4 +41,20 @@ public class Member {
     public void setTeam(Team team) {
         this.team = team;
     }
+
+    // Member에 연관관계 전용 changeTeam 함수를 작성하거나, Team에 연관관계 전용 addMember 함수를 작성 : 둘중 하나 만 작성
+    public void changeTeam(Team team) { // 연관관계 편의 메소드. 메소드 이름도 setTeam --> changeTeam으로 변경
+        this.team = team;               // 다시 setTeam(Setter)는 추가할 것
+        team.getMembers().add(this);
+    }
+
+    // 무한 루프 발생(StackOverflow)하게 됨. Team.toString() 볼 것
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", team=" + team + // team.toString()을 또 호출
+                '}';
+    }
 }

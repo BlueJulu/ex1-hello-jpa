@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -22,16 +23,25 @@ public class JpaMain {
 
             Member member = new Member();
             member.setUserName("member1");
-            member.setTeam(team); // *** 팀을 지정해줘야 한다.(주의) 그래야 두 객체간에 연결이 된다 ***
+            member.changeTeam(team); // 연관관계 메소드로 보완했기 때문에 이 문장 하나로 끝. Member에 Team 정보 등록하고 Team의 List에 Member 정보 등록
+                                  // Team에서 member add할 필요 없음. 메소드를 원자적으로 사용하게 됨(하나만 호출해도 양쪽으로 값이 걸림)
+                                  // 함수명도 setTeam --> changeTeam.(geter/setter 관례 때문에 이름 변경)
             em.persist(member);
 
-            team.getMembers().add(member); // 이 문장은 JPA에서 DB 적용 무시한다. read-only 이기 때문
-            // 문제는 아래 두 코드를 주석 처리하고 그 아래애 find를 하게 되면 1차 캐시에서 찾기 때문에 위의 List에 add 하는 코드가 없으면
-            // 결과가 아무 것도 나오지 않는다. 따라서 Team을 신규 생성, Member 생성(setTeam()), 그리고 다시 Team에서 List에 Member를 등록해야 한다.
-            // 운영 코드에서는 아래 flush, clear 안 붙이니까. <<< 양방향 연관관계 매핑 시 주의 사항 임 >>>
-            
-            em.flush();
-            em.clear();
+            // 연관관계 메소드(setTeam) 생성한 후, 아래 코드 삭제
+            //team.getMembers().add(member);
+
+//            em.flush();
+//            em.clear();
+
+            Team findTeam = em.find(Team.class, team.getId());
+            List<Member> members = findTeam.getMembers();
+
+            System.out.println("=================");
+            for(Member m : members){
+                System.out.println("m = " + m.getUserName());
+            }
+            System.out.println("=================");
 
             tx.commit();
         } catch(Exception e){
