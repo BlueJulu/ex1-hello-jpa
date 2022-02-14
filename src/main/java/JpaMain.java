@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -24,18 +25,16 @@ public class JpaMain {
             member.setTeam(team);
             em.persist(member);
 
-            // 아래 코드 밑에 있는 find 문은 영속성 컨텍스트 때문에 1차 캐시에서 가져오게 된다.
-            // 아래 두 코드는 원래 안 쓰는데, 굳이 select 쿼리문을 보고 싶다면 이 두가지 코드를 앞에 삽입하면 된다
             em.flush(); // 쿼리 수행 - 1차 캐시와 DB 동기화
             em.clear(); // 1차 캐시 삭제
+            // *** 중요 *** 위 코드 두줄 때문에 아래 코드 실행 시 DB에 대한 SQL 수행이 발생하게 됨
+            Member findMember = em.find(Member.class, member.getId());
+            // 단방향에서 양방향으로 설정을 하였으므로 Team에서 Member 참조가 가능해졌음
+            List<Member> members = findMember.getTeam().getMembers();
 
-            Member findMember = em.find(Member.class, member.getId()); // 1차 캐시가 삭제 되었기 때문에 쿼리문 수행
-                            // 만약 위 두줄 코드(flush, clear)를 삭제하면 쿼리문 수행 안함(1차 캐시에서 가져오기 때문)
-            Team findTeam = findMember.getTeam(); // 객체지향적 방식
-            
-            // 수정 - 손쉽게 변경이 가능0
-            Team newTeam = em.find(Team.class, 100L); // 만약 100번 데이터가 있다면
-            findMember.setTeam(newTeam); // 수정도 이렇게 간단히 할 수 있다. update 쿼리에 의해서 자동 FK가 업데이트 됨
+            for(Member m : members){
+                System.out.println("m = " + m.getUserName());
+            }
 
             tx.commit();
         } catch(Exception e){
