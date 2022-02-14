@@ -5,7 +5,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -18,23 +17,21 @@ public class JpaMain {
         try{
             Team team = new Team();
             team.setName("TeamA");
-            em.persist(team); // 이제 1차 캐시에 id 값이 들어감. 영속 상태
+            //team.getMembers().add(member);
+            em.persist(team);
 
             Member member = new Member();
             member.setUserName("member1");
-            member.setTeam(team);
+            member.setTeam(team); // *** 팀을 지정해줘야 한다.(주의) 그래야 두 객체간에 연결이 된다 ***
             em.persist(member);
 
-            em.flush(); // 쿼리 수행 - 1차 캐시와 DB 동기화
-            em.clear(); // 1차 캐시 삭제
-            // *** 중요 *** 위 코드 두줄 때문에 아래 코드 실행 시 DB에 대한 SQL 수행이 발생하게 됨
-            Member findMember = em.find(Member.class, member.getId());
-            // 단방향에서 양방향으로 설정을 하였으므로 Team에서 Member 참조가 가능해졌음
-            List<Member> members = findMember.getTeam().getMembers();
-
-            for(Member m : members){
-                System.out.println("m = " + m.getUserName());
-            }
+            team.getMembers().add(member); // 이 문장은 JPA에서 DB 적용 무시한다. read-only 이기 때문
+            // 문제는 아래 두 코드를 주석 처리하고 그 아래애 find를 하게 되면 1차 캐시에서 찾기 때문에 위의 List에 add 하는 코드가 없으면
+            // 결과가 아무 것도 나오지 않는다. 따라서 Team을 신규 생성, Member 생성(setTeam()), 그리고 다시 Team에서 List에 Member를 등록해야 한다.
+            // 운영 코드에서는 아래 flush, clear 안 붙이니까. <<< 양방향 연관관계 매핑 시 주의 사항 임 >>>
+            
+            em.flush();
+            em.clear();
 
             tx.commit();
         } catch(Exception e){

@@ -13,7 +13,7 @@ public class Team {
 
     private String name;
 
-    @OneToMany(mappedBy = "team") // 나는 변수명 team으로 매핑되어 있는 애야! 라는 뜻. mappedBy: 읽기만 가능
+    @OneToMany(mappedBy = "team") // 나는 변수명 team으로 매핑되어 있는 애야! 라는 뜻. mappedBy: 읽기만 가능. 업데이트 시 JPA는 이거 자체를 무시함
     private List<Member> members = new ArrayList<>(); // *** 초기화한다(관례), add 시 null 포인터가 안 뜸 ***
 
     public Long getId() {
