@@ -1,10 +1,10 @@
-import entity.Item;
-import entity.Movie;
+import entity.Member;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.time.LocalDateTime;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -16,25 +16,15 @@ public class JpaMain {
 
         try{
 
-            Movie movie = new Movie();
-            movie.setDirector("aaaa");
-            movie.setActor("bbbb");
-            movie.setName("바람과 함께 사라지다");
-            movie.setPrice(10000);
+            Member member = new Member();
+            member.setUserName("user1");
+            member.setCreatedBy("kim");
+            member.setCreatedAt(LocalDateTime.now());
 
-            em.persist(movie);
+            em.persist(member);
 
-            // 영속성 컨텍스트 삭제
             em.flush();
             em.clear();
-
-//            Movie findMovie = em.find(Movie.class, movie.getId());
-//            System.out.println("findMovie = " + findMovie);
-
-            // 구현 클래스 마다 테이블 전략 설정 시 발생하는 문제점(조상 객체를 대상으로 한 조회 수행 시)
-            // 아래 코드 수행 시, UNION all 로 모조리 다 뒤지게 된다
-            Item item = em.find(Item.class, movie.getId());
-            System.out.println("item = " + item);
 
             tx.commit();
         } catch(Exception e){
