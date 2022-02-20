@@ -3,7 +3,7 @@ package entity;
 import javax.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn // 서브 테이블 매칭을 위한 DTYPE 자동 생성 어노테이션.
                     // @DiscriminatorColumn(name = "DIS_TYPE") <-- 이름을 지정할 수 있다(참고: DTYPE 이 관례)
                     // !!! 싱글테이블 전략에서는 이 어노테이션을 필수로 추가해야 한다.(JOIN 테이블의 경우 생략해도 찾아 갈 수는 있다)
